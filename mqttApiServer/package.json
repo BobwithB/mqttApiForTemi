@@ -10,7 +10,7 @@
     "serve": "node dist/app.js",
     "start_babel": "babel-node ./app.js --preset=babel-preset-es2015",
     "lint": "eslint .",
-    "test": "./node_modul es/.bin/mocha"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
