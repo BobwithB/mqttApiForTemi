@@ -40,10 +40,10 @@ const defaultFilter = function (req, res, next) {
     Logs.host = req.hostname;
     Logs.url = req.url;
     Logs.method = req.method;
-    Logs.token = req.headers.token;
-    Logs.name = tokenList.find((item,index,arr)=>{
-        return item.token === Logs.token
-    }).name;
+    // Logs.token = req.headers.token;
+    // Logs.name = tokenList.find((item,index,arr)=>{
+    //     return item.token === Logs.token
+    // }).name;
     if('GET' === req.method){
         requestPayLoad  = JSON.stringify(req.query);
     }else if ('POST' === req.method){

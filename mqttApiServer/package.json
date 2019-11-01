@@ -9,8 +9,8 @@
     "build": "babel . -d dist --presets es2015,stage-2 --ignore spec.js,node_modules",
     "serve": "node dist/app.js",
     "start_babel": "babel-node ./app.js --preset=babel-preset-es2015",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "./node_modul es/.bin/mocha"
   },
   "repository": {
     "type": "git",
@@ -24,6 +24,7 @@
   "author": "Tom Yitav <tomyitav@gmail.com>",
   "dependencies": {
     "body-parser": "^1.19.0",
+    "chai": "^4.2.0",
     "cors": "^2.8.0",
     "cross-env": "^6.0.3",
     "dotenv": "^8.2.0",
@@ -31,6 +32,10 @@
     "lodash": "^4.15.0",
     "mongoose": "^4.8.6",
     "morgan": "^1.8.2",
+    "node-fetch": "^2.6.0",
+    "super-request": "^1.2.0",
+    "superagent": "^5.1.0",
+    "supertest": "^4.0.2",
     "winston": "^2.3.1",
     "winston-daily-rotate-file": "^1.4.6"
   },
