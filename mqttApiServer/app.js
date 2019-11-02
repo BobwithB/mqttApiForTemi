@@ -15,7 +15,6 @@ const tokenList = [
     {"token":"987654321","name":"Mike"}
 ]
 
-console.log("NODE_ENV = " + process.env.NODE_ENV)
 
 if(process.env.NODE_ENV === 'dev'){
     dotenv.config({ path: 'config.env.dev' });
@@ -26,6 +25,8 @@ if(process.env.NODE_ENV === 'dev'){
 }
 
 const port = process.env.PORT || 3000;
+console.log("********8I am api server************("+port+")");
+
 let Logs = {
     ip:'',
     host:'',

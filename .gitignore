@@ -1,6 +1,9 @@
 #dist
 /mqttApiServer/dist
+/subscriber/dist
 /mqttApiServer/.idea
+/subscriber/.idea
+/subscriber/node_modules
 /mqttApiServer/node_modules
 
 # Logs
