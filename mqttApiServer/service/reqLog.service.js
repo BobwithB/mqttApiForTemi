@@ -1,10 +1,12 @@
 import reqLog from '../models/reqLog.model'
 import logger from '../core/logger/app-logger'
 import  reqLogModel from '../models/reqLog.model'
+import  mqttService from './mqtt.service'
 
 const service = {};
 
 service.getAll = async (req, res) => {
+    mqttService.sendMsg();
     try {
         const logs = await reqLog.getAll();
         res.send(logs);

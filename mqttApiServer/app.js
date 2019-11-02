@@ -4,9 +4,11 @@ import cors from "cors";
 import logger from './core/logger/app-logger'
 import morgan from 'morgan'
 import reqLog from './routes/reqLog.route'
+import mqtt from './routes/mqtt.route'
 import connectToDb from './db/connect'
 import bodyParser from  'body-parser';
 import service from './service/reqLog.service'
+import mqttService from './service/mqtt.service'
 var path = require('path');
 const tokenList = [
     {"token":"123456789","name":"Bob"},
@@ -50,14 +52,14 @@ const defaultFilter = function (req, res, next) {
         requestPayLoad = '';
     }
     Logs.payload =requestPayLoad;
-    if("/" === Logs.url || "/404" === Logs.url){
+    if("/mqtt/publish" === Logs.url || "/" === Logs.url || "/error" === Logs.url || "/reqLog/allReqLog" === Logs.url){
         next();
     }else{
         if(!req.headers.token || !tokenList.find((item,index,arr)=>{
                 return item.token === req.headers.token
             })){
             logger.error("illegal in token check,will go to 404 page");
-            res.redirect('/404');
+            res.redirect('/error');
         }else{
             Logs.token = req.headers.token;
             Logs.name = tokenList.find((item,index,arr)=>{
@@ -80,6 +82,8 @@ logger.stream = {
 };
 
 connectToDb();
+mqttService.connect();
+// mqttService.receiveMsg();
 
 const app = express();
 app.set('views', path.join(__dirname, 'views'));
@@ -91,12 +95,13 @@ app.use(defaultFilter);
 app.use(cors());
 app.use(morgan("dev", { "stream": logger.stream }));
 app.use('/reqLog', reqLog);
+app.use('/mqtt', mqtt);
 //Index route
 app.get('/', (req, res) => {
     res.render('index');
 });
-app.get('/404', (req, res) => {
-    res.render('404');
+app.get('/error', (req, res) => {
+    res.render('error');
 });
 
 app.listen(port, () => {
