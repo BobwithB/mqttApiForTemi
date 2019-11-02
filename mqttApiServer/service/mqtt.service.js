@@ -1,11 +1,11 @@
 import mqtt from "mqtt";
 const mqttService = {};
 let client = {};
-const mqtt_url = 'mqtt:tailor.cloudmqtt.com';
-const topic = 'myCloudMQTT';
+const mqtt_url = 'mqtt:farmer.cloudmqtt.com';
+const topic = 'demoTopic';
 import logger from '../core/logger/app-logger'
 mqttService.connect =  () => {
-    client =  mqtt.connect(mqtt_url,{port:'18558',username:'fusdnbdl',password:'J4A79NQv35ke'});
+    client =  mqtt.connect(mqtt_url,{port:'13697',username:'fhutekbq',password:'yBUbbRW3ys7Z'});
     mqttService.receiveMsg();
 }
 mqttService.sendMsg =  (req, res) => {
@@ -31,7 +31,7 @@ mqttService.sendMsg =  (req, res) => {
 }
 mqttService.receiveMsg =  () => {
     client.on('message', function (topic, message) {
-        logger.info("port(" + process.env.PORT + ") subscriber receive a massage:"+message.toString())
+        logger.info("port(" + process.env.PORT + ") receive a massage from topic("+topic+"):"+message.toString())
     })
 }
 export default mqttService;
