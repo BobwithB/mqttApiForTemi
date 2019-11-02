@@ -7,6 +7,7 @@ import reqLog from './routes/reqLog.route'
 import connectToDb from './db/connect'
 import bodyParser from  'body-parser';
 import service from './service/reqLog.service'
+var path = require('path');
 const tokenList = [
     {"token":"123456789","name":"Bob"},
     {"token":"987654321","name":"Mike"}
@@ -40,10 +41,7 @@ const defaultFilter = function (req, res, next) {
     Logs.host = req.hostname;
     Logs.url = req.url;
     Logs.method = req.method;
-    // Logs.token = req.headers.token;
-    // Logs.name = tokenList.find((item,index,arr)=>{
-    //     return item.token === Logs.token
-    // }).name;
+
     if('GET' === req.method){
         requestPayLoad  = JSON.stringify(req.query);
     }else if ('POST' === req.method){
@@ -52,7 +50,23 @@ const defaultFilter = function (req, res, next) {
         requestPayLoad = '';
     }
     Logs.payload =requestPayLoad;
-    next();
+    if("/" === Logs.url || "/404" === Logs.url){
+        next();
+    }else{
+        if(!req.headers.token || !tokenList.find((item,index,arr)=>{
+                return item.token === req.headers.token
+            })){
+            logger.error("illegal in token check,will go to 404 page");
+            res.redirect('/404');
+        }else{
+            Logs.token = req.headers.token;
+            Logs.name = tokenList.find((item,index,arr)=>{
+                return item.token === Logs.token
+            }).name;
+            next();
+        }
+    }
+
 }
 logger.stream = {
     write: function(message, encoding){
@@ -61,12 +75,16 @@ logger.stream = {
         Logs.time = msArr[3] + msArr[4];
         service.inserLogs(Logs);
         logger.info("req = " + JSON.stringify(Logs));
+        Logs = {};
     }
 };
 
 connectToDb();
 
 const app = express();
+app.set('views', path.join(__dirname, 'views'));
+app.engine('html', require('ejs').__express);
+app.set('view engine', 'html');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(defaultFilter);
@@ -75,7 +93,10 @@ app.use(morgan("dev", { "stream": logger.stream }));
 app.use('/reqLog', reqLog);
 //Index route
 app.get('/', (req, res) => {
-    res.send('Invalid endpoint! 404');
+    res.render('index');
+});
+app.get('/404', (req, res) => {
+    res.render('404');
 });
 
 app.listen(port, () => {
