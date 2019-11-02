@@ -53,7 +53,7 @@ const defaultFilter = function (req, res, next) {
         requestPayLoad = '';
     }
     Logs.payload =requestPayLoad;
-    if("/mqtt/publish" === Logs.url || "/" === Logs.url || "/error" === Logs.url || "/reqLog/allReqLog" === Logs.url){
+    if("/" === Logs.url || "/error" === Logs.url || "/reqLog/allReqLog" === Logs.url){
         next();
     }else{
         if(!req.headers.token || !tokenList.find((item,index,arr)=>{
