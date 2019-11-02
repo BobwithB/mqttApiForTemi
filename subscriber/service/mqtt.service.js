@@ -1,11 +1,12 @@
 import mqtt from "mqtt";
+import logger from '../core/logger/app-logger'
 const mqttService = {};
 let client = {};
-const mqtt_url = 'mqtt:farmer.cloudmqtt.com';
-const topic = 'demoTopic';
-import logger from '../core/logger/app-logger'
 mqttService.connect =  () => {
-    client =  mqtt.connect(mqtt_url,{port:'13697',username:'fhutekbq',password:'yBUbbRW3ys7Z'});
+    const mqtt_url = process.env.mqttUrl;
+    const topic = process.env.mqttTopic;
+    const mqttConfig = {port:process.env.mqttPort,username:process.env.mqttUsername,password:process.env.mqttPassword};
+    client =  mqtt.connect(mqtt_url,mqttConfig);
     client.subscribe(topic, function (err) {
     })
     client.on('message', function (topics, message) {
