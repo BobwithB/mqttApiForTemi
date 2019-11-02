@@ -3,7 +3,7 @@ import dotenv from 'dotenv'
 import cors from "cors";
 import logger from './core/logger/app-logger'
 import mqttService from './service/mqtt.service'
-
+import request from 'request'
 
 
 if(process.env.NODE_ENV === 'dev'){
@@ -17,8 +17,23 @@ if(process.env.NODE_ENV === 'dev'){
 const port = process.env.PORT || 3000;
 console.log("********8I am api subscriber************("+port+")");
 
-
-mqttService.connect();
+const promise = new Promise(function (resolve, reject) {
+    request(process.env.configURL, function(error, response, body) {
+        if (!error && response.statusCode == 200) {
+            resolve(body);
+        }else{
+            reject(body)
+        }
+    });
+});
+promise.then(function(data){
+    console.log("config data="+data);
+    data = JSON.parse(data);
+    process.env = {...process.env,...data}
+    mqttService.connect();
+},function(err){
+    console.log("config err="+err);
+});
 
 const app = express();
 app.use(cors());

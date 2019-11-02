@@ -7,6 +7,7 @@ import reqLog from './routes/reqLog.route'
 import mqtt from './routes/mqtt.route'
 import connectToDb from './db/connect'
 import bodyParser from  'body-parser';
+import request from  'request';
 import service from './service/reqLog.service'
 import mqttService from './service/mqtt.service'
 var path = require('path');
@@ -82,8 +83,26 @@ logger.stream = {
     }
 };
 
-connectToDb();
-mqttService.connect();
+const promise = new Promise(function (resolve, reject) {
+    request(process.env.configURL, function(error, response, body) {
+        if (!error && response.statusCode == 200) {
+            resolve(body);
+        }else{
+            reject(body)
+        }
+    });
+});
+promise.then(function(data){
+    console.log("config data="+data);
+    data = JSON.parse(data);
+    process.env = {...process.env,...data}
+    connectToDb();
+    mqttService.connect();
+},function(err){
+    console.log("config err="+err);
+});
+// connectToDb();
+// mqttService.connect();
 // mqttService.receiveMsg();
 
 const app = express();
