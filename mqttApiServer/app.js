@@ -43,6 +43,7 @@ const defaultFilter = function (req, res, next) {
     Logs.url = req.url;
     Logs.method = req.method;
 
+    console.log("req.url = " + req.url);
     if('GET' === req.method){
         requestPayLoad  = JSON.stringify(req.query);
     }else if ('POST' === req.method){

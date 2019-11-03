@@ -1,14 +1,71 @@
-var request = require('superagent');
-var expect = require('chai').expect;
+const http = require("http")
 
 describe('test/test1.js ', function() {
-    it('get allReqLog', function(done){
-        request
-            .get('http://localhost:8082/reqLog/allReqLog?aa=ee&dd=bb')
-            .end(function(err, res){
-                console.log(JSON.stringify(res.body));
-                expect(res).to.be.an('object');
-                done();
-            });
+
+    it('publishMsg', function(done){
+        publishMsg();
+        done();
+    });
+
+});
+
+describe('test/test1.js ', function() {
+    it('getTopics', function(done){
+        getTopics();
+        done();
     });
 });
+
+const publishMsg = async()=>{
+    var postData = {
+        'msg' : 'Hello World!'
+    };
+    var options = {
+        hostname: 'localhost',
+        port: 8082,
+        path: '/mqtt/publish',
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'token': '123456789',
+        }
+    };
+    var req = await http.request(options, (res) => {
+        console.log(`STATUS: ${res.statusCode}`);
+        console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
+        res.on('data', (chunk) => {
+            console.log(`BODY: ${chunk}`);
+        });
+        res.on('end', () => {
+            console.log('No more data in response.')
+        })
+    });
+    req.write(JSON.stringify(postData));
+    req.end();
+
+}
+const getTopics = async()=>{
+    var options = {
+        hostname: 'localhost',
+        port: 8082,
+        path: '/mqtt/topics',
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'token': '123456789',
+        }
+    };
+    var req = await http.request(options, (res) => {
+        console.log(`STATUS: ${res.statusCode}`);
+        console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
+        res.on('data', (chunk) => {
+            console.log(`BODY: ${chunk}`);
+        });
+        res.on('end', () => {
+            console.log('No more data in response.')
+        })
+    });
+    req.write("");
+    req.end();
+
+}
