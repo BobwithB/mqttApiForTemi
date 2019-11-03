@@ -7,7 +7,6 @@ const reqLogSchema = mongoose.Schema({
 const reqLogModel = mongoose.model('logs', reqLogSchema);
 
 reqLogModel.getAll = () => {
-
     return reqLogModel.find({});
 }
 reqLogModel.inserLogs = (logs) => {
