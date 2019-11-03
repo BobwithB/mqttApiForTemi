@@ -10,10 +10,10 @@ const connectToDb = async () => {
     const dbName = config.dbName;
     try {
         await Mongoose.connect(`mongodb://${dbHost}:${dbPort}/${dbName}`, { useMongoClient: true });
-        logger.info('Connected to mongo!!!');
+        logger.info(process.pid+' worker Connected to mongo!!!');
     }
     catch (err) {
-        logger.error('Could not connect to MongoDB');
+        logger.error(process.pid+' worker Could not connect to MongoDB');
     }
 }
 

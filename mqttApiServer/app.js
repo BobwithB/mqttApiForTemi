@@ -15,8 +15,6 @@ const tokenList = [
     {"token":"123456789","name":"Bob"},
     {"token":"987654321","name":"Mike"}
 ]
-
-
 if(process.env.NODE_ENV === 'dev'){
     dotenv.config({ path: 'config.env.dev' });
 } else if(process.env.NODE_ENV === 'prod'){
@@ -26,7 +24,6 @@ if(process.env.NODE_ENV === 'dev'){
 }
 
 const port = process.env.PORT || 3000;
-console.log("********8I am api server************("+port+")");
 
 let Logs = {
     ip:'',
@@ -93,18 +90,14 @@ const promise = new Promise(function (resolve, reject) {
     });
 });
 promise.then(function(data){
-    console.log("config data="+data);
     data = JSON.parse(data);
     process.env = {...process.env,...data}
+    console.log(process.pid + " worker done with config init");
     connectToDb();
     mqttService.connect();
 },function(err){
     console.log("config err="+err);
 });
-// connectToDb();
-// mqttService.connect();
-// mqttService.receiveMsg();
-
 const app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.engine('html', require('ejs').__express);
@@ -124,6 +117,19 @@ app.get('/error', (req, res) => {
     res.render('error');
 });
 
-app.listen(port, () => {
-    logger.info('server started - ', port);
-});
+const cluster = require('cluster');
+const numCPUs = require('os').cpus().length;
+if (cluster.isMaster) {
+    for (let i = 0; i < numCPUs; i++) {
+        cluster.fork();
+    }
+    cluster.on('exit', () => {
+        console.log(`woker ${process.pid} out`);
+    });
+} else {
+    const server = app.use(express.static(__dirname)).listen(port, 'localhost', () => {
+        const host = server.address().address;
+        const port = server.address().port;
+        console.log("worker %s listen to http://%s:%s", process.pid, host, port);
+    });
+}

@@ -8,6 +8,7 @@ mqttService.connect =  () => {
     topic = process.env.mqttTopic;
     const mqttConfig = {port:process.env.mqttPort,username:process.env.mqttUsername,password:process.env.mqttPassword};
     client =  mqtt.connect(mqtt_url,mqttConfig);
+    logger.info(process.pid+' worker Connected to mqtt broker!!!');
     mqttService.receiveMsg();
 }
 mqttService.sendMsg =  (req, res) => {
@@ -19,12 +20,11 @@ mqttService.sendMsg =  (req, res) => {
     } else {
         requestPayLoad.msg = 'empty';
     }
-    logger.info("send msg = " + JSON.stringify(requestPayLoad));
     if(!requestPayLoad.msg){
         requestPayLoad.msg = 'empty';
     }
     client.subscribe(topic, function (err) {
-            logger.info("send msg = " + requestPayLoad.msg);
+        logger.info(process.pid+":worker help send msg:" + JSON.stringify(requestPayLoad.msg));
             if (!err) {
                 client.publish(topic, requestPayLoad.msg)
             }
@@ -33,7 +33,7 @@ mqttService.sendMsg =  (req, res) => {
 }
 mqttService.receiveMsg =  () => {
     client.on('message', function (topic, message) {
-        logger.info("port(" + process.env.PORT + ") receive a massage from topic("+topic+"):"+message.toString())
+        logger.info(process.pid+"worker port(" + process.env.PORT + ") receive a massage from topic("+topic+"):"+message.toString())
     })
 }
 export default mqttService;
